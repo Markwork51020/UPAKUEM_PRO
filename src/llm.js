@@ -44,8 +44,12 @@ export async function askLLM(history) {
   const raw = data.choices?.[0]?.message?.content ?? '';
   console.log(`[LLM] Raw response: ${raw.slice(0, 300)}`);
 
-  // Strip possible markdown code fences
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  // Strip possible markdown code fences and trailing commas before closing brackets
+  const cleaned = raw
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .replace(/,\s*([}\]])/g, '$1')
+    .trim();
 
   return JSON.parse(cleaned);
 }

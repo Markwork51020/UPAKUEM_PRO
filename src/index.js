@@ -3,6 +3,7 @@ import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { askLLM } from './llm.js';
 import { PRICE_LIST, DISCOUNT_FIRST_ORDER } from './price.js';
+import { generateKPExcel } from './excel.js';
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -37,7 +38,7 @@ function calculateKP(services) {
 
 function buildKPMessage({ lines, sum, discount, finalPrice, hasUnknown }) {
   const itemLines = lines
-    .map(l => `• ${l.name} × ${fmt(l.qty)} ${l.unit} = ${fmt(l.total)} ₽`)
+    .map(l => `• ${escMd(l.name)} × ${escMd(String(fmt(l.qty)))} ${escMd(l.unit)} \\= ${escMd(String(fmt(l.total)))} ₽`)
     .join('\n');
 
   let text = `🏭 *Коммерческое предложение*
@@ -184,7 +185,17 @@ bot.on(message('text'), async ctx => {
   // Reset session after successful KP
   sessions.delete(userId);
 
-  return ctx.reply(buildKPMessage(kp), { parse_mode: 'MarkdownV2' });
+  await ctx.reply(buildKPMessage(kp), { parse_mode: 'MarkdownV2' });
+
+  try {
+    const buffer = await generateKPExcel(kp);
+    await ctx.replyWithDocument(
+      { source: Buffer.from(buffer), filename: `КП_Upakuem_${Date.now()}.xlsx` },
+      { caption: '📎 Коммерческое предложение в Excel' }
+    );
+  } catch (err) {
+    console.error('Excel generation error:', err);
+  }
 });
 
 // ─── Launch ───────────────────────────────────────────────────────────────────
