@@ -37,7 +37,7 @@ function calculateKP(services) {
 
 function buildKPMessage({ lines, sum, discount, finalPrice, hasUnknown }) {
   const itemLines = lines
-    .map(l => `• ${l.name} × ${fmt(l.qty)} ${l.unit} = ${fmt(l.total)} ₽`)
+    .map(l => `• ${escMd(l.name)} × ${escMd(String(fmt(l.qty)))} ${escMd(l.unit)} \\= ${escMd(String(fmt(l.total)))} ₽`)
     .join('\n');
 
   let text = `🏭 *Коммерческое предложение*
