@@ -111,4 +111,4 @@ export const PRICE_LIST = {
   "Макет бирки": { price: 500.00, unit: "шт" },
 };
 
-export const DISCOUNT_FIRST_ORDER = 0.20; // 20%
+export const DISCOUNT_FIRST_ORDER = 0.15; // 15%
