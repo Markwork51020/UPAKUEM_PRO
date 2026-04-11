@@ -85,7 +85,7 @@ export async function generateKPExcel(kpData) {
   sumRow.getCell(4).alignment = { horizontal: 'right' };
 
   const discountRow = ws.getRow(summaryStart + 1);
-  discountRow.getCell(3).value = 'Скидка 20%:';
+  discountRow.getCell(3).value = 'Скидка 15%:';
   discountRow.getCell(3).font = { color: { argb: 'FFCC0000' } };
   discountRow.getCell(4).value = -Math.round(discount);
   discountRow.getCell(4).numFmt = '#,##0';
