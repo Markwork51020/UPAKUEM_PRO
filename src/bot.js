@@ -6,7 +6,6 @@ import { generateKPExcel } from './excel.js';
 
 export const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// In-memory sessions — persists across warm invocations, cleared on cold start
 const sessions = new Map();
 
 function fmt(num) {
@@ -112,26 +111,20 @@ function buildShortPrice() {
   return lines.join('\n');
 }
 
-// ─── Commands ────────────────────────────────────────────────────────────────
-
 bot.start(ctx => {
   sessions.delete(ctx.from.id);
   return ctx.reply(
-
-    'Привет\\! Я помогу рассчитать стоимость фулфилмента\.\n\nОпишите ваш заказ: что за товар, сколько штук, какие услуги нужны\\.',
-
+    'Привет\\! Я помогу рассчитать стоимость фулфилмента\\.\n\nОпишите ваш заказ: что за товар, сколько штук, какие услуги нужны\\.',
+    { parse_mode: 'MarkdownV2' }
   );
 });
 
 bot.command('help', ctx =>
   ctx.reply(
     '*Как пользоваться ботом:*\n\n' +
-
-    '1\\. Напишите, что нужно сделать с вашим товаром \\(принять, упаковать, промаркировать, отгрузить\\)\.\n' +
-    '2\\. Укажите количество штук/коробов/паллет\.\n' +
-    '3\\. Бот рассчитает стоимость и пришлёт коммерческое предложение\.\n\n' +
-=======
- 
+    '1\\. Напишите, что нужно сделать с вашим товаром \\(принять, упаковать, промаркировать, отгрузить\\)\\.\n' +
+    '2\\. Укажите количество штук/коробов/паллет\\.\n' +
+    '3\\. Бот рассчитает стоимость и пришлёт коммерческое предложение\\.\n\n' +
     '*Пример:*\n' +
     '_Нужно принять 5000 футболок, промаркировать честный знак, упаковать в ПВД до 20 см и отгрузить на WB коробами \\(100 коробов\\)\\._\n\n' +
     '/price — краткий прайс\\-лист\n' +
@@ -143,8 +136,6 @@ bot.command('help', ctx =>
 bot.command('price', ctx =>
   ctx.reply(buildShortPrice(), { parse_mode: 'MarkdownV2' })
 );
-
-// ─── Main handler ─────────────────────────────────────────────────────────────
 
 bot.on(message('text'), async ctx => {
   const userId = ctx.from.id;
@@ -158,9 +149,7 @@ bot.on(message('text'), async ctx => {
   let thinking;
   try {
     thinking = await ctx.reply('⏳ Считаю...');
-  } catch (_) {
-    // non-critical
-  }
+  } catch (_) {}
 
   let result;
   try {
@@ -190,9 +179,7 @@ bot.on(message('text'), async ctx => {
 
   if (kp.lines.length === 0) {
     return ctx.reply(
-
-      'Не удалось сопоставить услуги с прайсом\\. Менеджер свяжется с вами для уточнения деталей\.\n\nTelegram: @Upakuem\\_pro',
-
+      'Не удалось сопоставить услуги с прайсом\\. Менеджер свяжется с вами для уточнения деталей\\.\n\nTelegram: @Upakuem\\_pro',
       { parse_mode: 'MarkdownV2' }
     );
   }
